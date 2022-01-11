@@ -1,0 +1,16 @@
+{
+  "name": "simple-genetic-algorithm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "czerwiukk",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.1",
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.3.0",
+    "typescript": "^4.4.4"
+  }
+}
