@@ -1,10 +1,10 @@
 import { Location } from "./Location";
 import { Population } from "./types";
 
-const getRandomRoute = (locations: Location[]) =>
-  locations.map(() => locations[Math.floor(Math.random() * locations.length)]);
+export const getRandomItem = <T>(items: T[]) =>
+  items.map(() => items[Math.floor(Math.random() * items.length)]);
 
 export const getInitialPopulation = (
   locations: Location[],
   size: number
-): Population => Array.from(Array(size)).map(() => getRandomRoute(locations));
+): Population => Array.from(Array(size)).map(() => getRandomItem(locations));

@@ -1,13 +1,16 @@
 "use-strict";
 
-import { RouteValue } from "./RouteValue";
+import { getInitialPopulation, getRandomItem } from "./getInitialPopulation";
+import { getRouteValue } from "./getRouteValue";
+import { Location } from "./Location";
+import { shuffleArray } from "./shuffleArray";
 import { EvaluatedRoute, Population, Route } from "./types";
 
 const getEvaluatedRoutes = (routes: Population) =>
   routes
     .map((route, id) => ({
       id,
-      value: new RouteValue(route).getRouteValue(),
+      value: getRouteValue(route),
       route,
     }))
     .sort((a, b) => a.value - b.value)
@@ -63,3 +66,53 @@ const crossbreed = (route1: Route, route2: Route) => {
 
   return [...firstPart, ...secondPart];
 };
+
+const getCrossbreededRoutes = (routes: Population): Population => {
+  const randomizedRoutes = shuffleArray(routes);
+  return routes.map((_, idx) =>
+    crossbreed(
+      randomizedRoutes[idx],
+      randomizedRoutes[randomizedRoutes.length - idx - 1]
+    )
+  );
+};
+
+const mutate = (route: Route, mutationChance: number) =>
+  route.map((_, swappedIdx1) => {
+    if (Math.random() >= mutationChance) return route;
+    const swappedIdx2 = Math.floor(route.length * Math.random());
+
+    const mutatedRoute = [...route];
+
+    const [location1, location2] = [route[swappedIdx1], route[swappedIdx2]];
+
+    mutatedRoute[swappedIdx1] = location2;
+    mutatedRoute[swappedIdx2] = location1;
+
+    return mutatedRoute;
+  });
+
+const getMutatedPopulation = (routes: Population, mutationChance: number) =>
+  routes.map((route) => mutate(route, mutationChance));
+
+const evolve = (currentPopulation: Population, mutationChance: number) => {
+  const evaluatedRoutes = getEvaluatedRoutes(currentPopulation);
+
+  const selectedRoutes = getSelectedRoutes(evaluatedRoutes);
+
+  const crossbreededRoutes = getCrossbreededRoutes(selectedRoutes);
+
+  const mutatedRoutes = getMutatedPopulation(
+    crossbreededRoutes,
+    mutationChance
+  );
+
+  return mutatedRoutes;
+};
+
+const runGeneticAlgorithm = (
+  locations: Location[],
+  populationSize: number,
+  mutationChance: number,
+  generations: number
+) => getInitialPopulation(locations, populationSize);
