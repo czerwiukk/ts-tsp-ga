@@ -1,6 +1,7 @@
 "use-strict";
 
-import { getInitialPopulation, getRandomItem } from "./getInitialPopulation";
+import fs from "fs";
+import { getInitialPopulation } from "./getInitialPopulation";
 import { getRouteValue } from "./getRouteValue";
 import { Location } from "./Location";
 import { shuffleArray } from "./shuffleArray";
@@ -78,7 +79,7 @@ const getCrossbreededRoutes = (routes: Population): Population => {
 };
 
 const mutate = (route: Route, mutationChance: number) =>
-  route.map((_, swappedIdx1) => {
+  route.reduce((_, __, swappedIdx1) => {
     if (Math.random() >= mutationChance) return route;
     const swappedIdx2 = Math.floor(route.length * Math.random());
 
@@ -90,7 +91,7 @@ const mutate = (route: Route, mutationChance: number) =>
     mutatedRoute[swappedIdx2] = location1;
 
     return mutatedRoute;
-  });
+  }, route);
 
 const getMutatedPopulation = (routes: Population, mutationChance: number) =>
   routes.map((route) => mutate(route, mutationChance));
@@ -115,4 +116,39 @@ const runGeneticAlgorithm = (
   populationSize: number,
   mutationChance: number,
   generations: number
-) => getInitialPopulation(locations, populationSize);
+) => {
+  const initialPopulation = getInitialPopulation(locations, populationSize);
+  const initialDistance = 1 / getEvaluatedRoutes(initialPopulation)[0].value;
+
+  console.log(`Initial distance: ${initialDistance}`);
+
+  const finalPopulation = Array.from(Array(generations)).reduce<Route[]>(
+    (prevPopulation) => evolve(prevPopulation, mutationChance),
+    initialPopulation
+  );
+
+  const finalDistance = 1 / getEvaluatedRoutes(finalPopulation)[0].value;
+
+  console.log(`Final distance: ${finalDistance}`);
+};
+
+const locationList: Location[] = [];
+
+fs.readFile("dane/bier127.tsp", "utf8", function (err, data) {
+  if (err) throw err;
+
+  data.split("\n").forEach((line) => {
+    if (!isNaN(parseInt(line.trim()[0]))) {
+      const [_, x, y] = line
+        .split(" ")
+        .filter(Boolean)
+        .map((val) => parseInt(val));
+
+      console.log(x, y);
+      console.log(new Location(x, y));
+      locationList.push(new Location(x, y));
+    }
+  });
+
+  runGeneticAlgorithm(locationList, 200, 0.01, 10);
+});

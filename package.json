@@ -1,5 +1,5 @@
 {
-  "name": "simple-genetic-algorithm",
+  "name": "ts-tsp-ga",
   "version": "1.0.0",
   "main": "index.js",
   "author": "czerwiukk",
