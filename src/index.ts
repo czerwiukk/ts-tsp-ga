@@ -23,6 +23,9 @@ const evolve = (currentPopulation: Population, mutationChance: number) => {
   return mutatedRoutes;
 };
 
+const getBestDistanceFromPopulation = (p: Population) =>
+  1 / getEvaluatedRoutes(p)[0].value;
+
 const runGeneticAlgorithm = (
   locations: Location[],
   populationSize: number,
@@ -31,12 +34,22 @@ const runGeneticAlgorithm = (
 ) => {
   const initialPopulation = getInitialPopulation(locations, populationSize);
   const finalPopulation = Array.from(Array(generations)).reduce<Route[]>(
-    (prevPopulation) => evolve(prevPopulation, mutationChance),
+    (prevPopulation) => {
+      const next = evolve(prevPopulation, mutationChance);
+
+      const bestDistance = getBestDistanceFromPopulation(next);
+
+      fs.appendFileSync(
+        "CzerwiecAdrian.txt",
+        `${bestDistance} ${next[0].map((v) => ` ${v}`)}\n`
+      );
+      return next;
+    },
     initialPopulation
   );
 
   console.log(
-    `Best distance: ${1 / getEvaluatedRoutes(finalPopulation)[0].value}`
+    `Best distance: ${getBestDistanceFromPopulation(finalPopulation)}`
   );
 };
 
@@ -56,5 +69,5 @@ fs.readFile("dane/pr144.tsp", "utf8", function (err, data) {
     }
   });
 
-  runGeneticAlgorithm(locationList, 800, 0.02, 50);
+  runGeneticAlgorithm(locationList, 1200, 0.1, 250);
 });
