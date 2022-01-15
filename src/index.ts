@@ -23,9 +23,6 @@ const evolve = (currentPopulation: Population, mutationChance: number) => {
   return selectedRoutes;
 };
 
-const getBestDistanceFromPopulation = (p: Population) =>
-  1 / getEvaluatedRoutes(p)[0].value;
-
 const runGeneticAlgorithm = (
   locations: Location[],
   populationSize: number,
@@ -34,22 +31,17 @@ const runGeneticAlgorithm = (
 ) => {
   const initialPopulation = getInitialPopulation(locations, populationSize);
   const finalPopulation = Array.from(Array(generations)).reduce<Route[]>(
-    (prevPopulation) => {
-      const next = evolve(prevPopulation, mutationChance);
-
-      const bestDistance = getBestDistanceFromPopulation(next);
-
-      fs.appendFileSync(
-        "CzerwiecAdrian.txt",
-        `${bestDistance} ${next[0].map((v) => ` ${v.id}`)}\n`
-      );
-      return next;
-    },
+    (prevPopulation) => evolve(prevPopulation, mutationChance),
     initialPopulation
   );
 
-  console.log(
-    `Best distance: ${getBestDistanceFromPopulation(finalPopulation)}`
+  const { value, route } = getEvaluatedRoutes(finalPopulation)[0];
+
+  const bestDistance = 1 / value;
+
+  fs.appendFileSync(
+    "CzerwiecAdrian.txt",
+    `${bestDistance} ${route.map((v) => ` ${v.id}`)}\n`
   );
 };
 
@@ -69,5 +61,12 @@ fs.readFile("dane/bier127.tsp", "utf8", function (err, data) {
     }
   });
 
-  runGeneticAlgorithm(locationList, 1000, 0.01, 800);
+  const startTime = new Date().getTime();
+
+  const seconds = 30;
+
+  while (new Date().getTime() - startTime < seconds * 1000) {
+    console.log(1);
+    runGeneticAlgorithm(locationList, 100, 0.01, 800);
+  }
 });
