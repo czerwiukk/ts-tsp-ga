@@ -1,7 +1,8 @@
 export class Location {
-  constructor(public x: number, public y: number) {
+  constructor(public x: number, public y: number, public id: number) {
     this.x = x;
     this.y = y;
+    this.id = id;
   }
 
   public toString(): string {

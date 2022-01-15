@@ -9,18 +9,18 @@ import { getEvaluatedRoutes, getSelectedRoutes } from "./selecting";
 import { Population, Route } from "./types";
 
 const evolve = (currentPopulation: Population, mutationChance: number) => {
-  const evaluatedRoutes = getEvaluatedRoutes(currentPopulation);
-
-  const selectedRoutes = getSelectedRoutes(evaluatedRoutes);
-
-  const crossbreededRoutes = getCrossbreededRoutes(selectedRoutes);
+  const crossbreededRoutes = getCrossbreededRoutes(currentPopulation);
 
   const mutatedRoutes = getMutatedPopulation(
     crossbreededRoutes,
     mutationChance
   );
 
-  return mutatedRoutes;
+  const evaluatedRoutes = getEvaluatedRoutes(mutatedRoutes);
+
+  const selectedRoutes = getSelectedRoutes(evaluatedRoutes);
+
+  return selectedRoutes;
 };
 
 const getBestDistanceFromPopulation = (p: Population) =>
@@ -41,7 +41,7 @@ const runGeneticAlgorithm = (
 
       fs.appendFileSync(
         "CzerwiecAdrian.txt",
-        `${bestDistance} ${next[0].map((v) => ` ${v}`)}\n`
+        `${bestDistance} ${next[0].map((v) => ` ${v.id}`)}\n`
       );
       return next;
     },
@@ -55,19 +55,19 @@ const runGeneticAlgorithm = (
 
 const locationList: Location[] = [];
 
-fs.readFile("dane/pr144.tsp", "utf8", function (err, data) {
+fs.readFile("dane/bier127.tsp", "utf8", function (err, data) {
   if (err) throw err;
 
   data.split("\n").forEach((line) => {
     if (!isNaN(parseInt(line.trim()[0]))) {
-      const [_, x, y] = line
+      const [id, x, y] = line
         .split(" ")
         .filter(Boolean)
         .map((val) => parseInt(val));
 
-      locationList.push(new Location(x, y));
+      locationList.push(new Location(x, y, id));
     }
   });
 
-  runGeneticAlgorithm(locationList, 1200, 0.1, 250);
+  runGeneticAlgorithm(locationList, 1000, 0.01, 800);
 });

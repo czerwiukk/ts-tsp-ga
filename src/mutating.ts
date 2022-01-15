@@ -2,7 +2,7 @@ import { Route, Population } from "./types";
 
 const mutate = (route: Route, mutationChance: number) =>
   route.reduce((_, __, swappedIdx1) => {
-    if (Math.random() >= mutationChance) return route;
+    if (Math.random() < mutationChance) return route;
     const swappedIdx2 = Math.floor(route.length * Math.random());
 
     const mutatedRoute = [...route];
