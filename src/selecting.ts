@@ -33,10 +33,10 @@ export const getSelectedRoutes = (evaluatedValues: EvaluatedRoute[]) => {
   );
 
   return evaluatedValues.map(() => {
-    const shot = Math.random() * 100;
+    const random = Math.random() * 100;
 
     for (let i = 0; i < percentageValues.length; i++)
-      if (shot <= percentageValues[i]) return evaluatedValues[i].route;
+      if (random <= percentageValues[i]) return evaluatedValues[i].route;
 
     return evaluatedValues[evaluatedValues.length - 1].route;
   });
