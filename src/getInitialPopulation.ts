@@ -1,10 +1,24 @@
 import { Location } from "./Location";
 import { Population } from "./types";
 
-export const getRandomItem = <T>(items: T[]) =>
-  items.map(() => items[Math.floor(Math.random() * items.length)]);
+function shuffle<T>(array: T[]) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
 
 export const getInitialPopulation = (
   locations: Location[],
   size: number
-): Population => Array.from(Array(size)).map(() => getRandomItem(locations));
+): Population => Array.from(Array(size)).map(() => shuffle(locations));

@@ -6,7 +6,7 @@ export class Location {
   }
 
   public toString(): string {
-    return `(${this.x}, ${this.y})`;
+    return this.id.toString();
   }
 
   public getDistanceTo(other: Location): number {

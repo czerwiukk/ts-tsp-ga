@@ -10,7 +10,6 @@ import { Population, Route } from "./types";
 
 const evolve = (currentPopulation: Population, mutationChance: number) => {
   const crossbreededRoutes = getCrossbreededRoutes(currentPopulation);
-
   const mutatedRoutes = getMutatedPopulation(
     crossbreededRoutes,
     mutationChance
@@ -30,6 +29,7 @@ const runGeneticAlgorithm = (
   generations: number
 ) => {
   const initialPopulation = getInitialPopulation(locations, populationSize);
+
   const finalPopulation = Array.from(Array(generations)).reduce<Route[]>(
     (prevPopulation) => evolve(prevPopulation, mutationChance),
     initialPopulation
@@ -41,13 +41,13 @@ const runGeneticAlgorithm = (
 
   fs.appendFileSync(
     "CzerwiecAdrian.txt",
-    `${bestDistance} ${route.map((v) => ` ${v.id}`)}\n`
+    `${route.map((v) => ` ${v.id}`)} ${bestDistance}\n`
   );
 };
 
 const locationList: Location[] = [];
 
-fs.readFile("dane/bier127.tsp", "utf8", function (err, data) {
+fs.readFile("dane/pr144.tsp", "utf8", function (err, data) {
   if (err) throw err;
 
   data.split("\n").forEach((line) => {
@@ -66,7 +66,6 @@ fs.readFile("dane/bier127.tsp", "utf8", function (err, data) {
   const seconds = 30;
 
   while (new Date().getTime() - startTime < seconds * 1000) {
-    console.log(1);
     runGeneticAlgorithm(locationList, 100, 0.01, 800);
   }
 });
